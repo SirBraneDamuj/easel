@@ -3,6 +3,8 @@ using System.Collections;
 
 public class PieceController : MonoBehaviour {
 
+  public BoardController board;
+
 	public Piece model;
 	private string oldColor = "";
 	private Position oldPosition = null;
@@ -32,4 +34,9 @@ public class PieceController : MonoBehaviour {
 		Sprite sprite = Resources.Load<Sprite>(model.color + suffix);
 		GetComponent<SpriteRenderer>().sprite = sprite;
 	}
+
+  void OnMouseDown() {
+    Debug.Log(model.color);
+    board.getTile(model.position).GetComponent<SpriteRenderer>().color = Color.yellow;
+  }
 }
