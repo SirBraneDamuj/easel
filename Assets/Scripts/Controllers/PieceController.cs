@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class PieceController : MonoBehaviour {
 
   public BoardController board;
+  public bool isSelected = false;
 
 	public Piece model;
 	private string oldColor = "";
@@ -27,6 +28,9 @@ public class PieceController : MonoBehaviour {
 				oldColor = model.color;
 			}
 		}
+    if(board.getTile(model.position).myPiece != this) {
+      board.getTile(model.position).myPiece = this;
+    }
 	}
 	
 	void updateSprite() {
@@ -36,7 +40,33 @@ public class PieceController : MonoBehaviour {
 	}
 
   void OnMouseDown() {
-    Debug.Log(model.color);
-    board.getTile(model.position).GetComponent<SpriteRenderer>().color = Color.yellow;
+    if(!this.isSelected) {
+      board.selectPiece(this);
+    } else {
+      board.deselectPiece();
+    }
+  }
+  
+  public void select() {
+    this.isSelected = true;
+    setHighlightedSpaces(true);
+  }
+  
+  public void deselect() {
+    this.isSelected = false;
+    setHighlightedSpaces(false);
+  }
+  
+  private void setHighlightedSpaces(bool highlighted) {
+    foreach(Position p in model.getAvailableSpaces(board)) {
+      if(p.x < board.width && p.x >= 0) {
+        if(p.y < board.height && p.y >= 0) {
+          TileController tc = board.getTile(p);
+          if(tc.myPiece == null || this.model.canCombineWith(tc.myPiece.model)) {
+            board.getTile(p).isHighlighted = highlighted;
+          }
+        }
+      }
+    }
   }
 }
