@@ -23,6 +23,8 @@ public class BoardController : MonoBehaviour {
 				TileController newTile = Instantiate(tilePrefab, Vector3.zero, Quaternion.identity) as TileController;
 				newTile.transform.parent = transform;
         newTile.transform.position = new Vector3(col * Options.tileSize, row * Options.tileSize, 0);
+        newTile.board = this;
+        newTile.gridPosition = new Position(col, row);
         rowList.Add(newTile);
 			}
       this.rows.Add(rowList);
@@ -60,6 +62,8 @@ public class BoardController : MonoBehaviour {
   public void selectPiece(PieceController pc) {
     if(this.selectedPiece != null) {
       this.selectedPiece.deselect();
+    } else if(this.selectedPiece.model.positionIsInRange(pc.model.position)) {
+      //combine the pieces
     }
     this.selectedPiece = pc;
     pc.select();
@@ -69,6 +73,17 @@ public class BoardController : MonoBehaviour {
     if(this.selectedPiece != null) {
       this.selectedPiece.deselect();
       this.selectedPiece = null;
+    }
+  }
+  
+  public void tileClicked(TileController tc) {
+    if(this.selectedPiece != null) {
+      foreach(Position pos in this.selectedPiece.model.getAvailableSpaces(this)) {
+        if(tc.gridPosition.x == pos.x && tc.gridPosition.y == pos.y) {
+          this.selectedPiece.move(pos);
+          return;
+        }
+      }
     }
   }
 }

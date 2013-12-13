@@ -57,6 +57,13 @@ public class PieceController : MonoBehaviour {
     setHighlightedSpaces(false);
   }
   
+  public void move(Position pos) {
+    this.deselect();
+    this.board.getTile(model.position).myPiece = null;
+    this.model.move(pos);
+    this.board.getTile(pos).myPiece = this;
+  }
+  
   private void setHighlightedSpaces(bool highlighted) {
     foreach(Position p in model.getAvailableSpaces(board)) {
       if(p.x < board.width && p.x >= 0) {

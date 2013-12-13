@@ -14,4 +14,17 @@ public abstract class Piece {
 	
 	public abstract List<Position> getAvailableSpaces(BoardController board);
 	public abstract bool canCombineWith(Piece other);
+  
+  public void move(Position pos) {
+    this.position = pos;
+  }
+  
+  public bool positionIsInRange(BoardController board, Position newPos) {
+    foreach(Position availPos in getAvailableSpaces(board)) {
+      if(availPos.x == newPos.x && availPos.y == newPos.y) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

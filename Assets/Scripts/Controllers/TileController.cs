@@ -5,6 +5,8 @@ public class TileController : MonoBehaviour {
 
   public bool isHighlighted = false;
   public PieceController myPiece;
+  public BoardController board;
+  public Position gridPosition;
   private SpriteRenderer sprite;
 
 	// Use this for initialization
@@ -20,4 +22,8 @@ public class TileController : MonoBehaviour {
       sprite.color = isHighlighted ? Color.yellow : Color.white;
     }
 	}
+  
+  void OnMouseDown() {
+    this.board.tileClicked(this);
+  }
 }
