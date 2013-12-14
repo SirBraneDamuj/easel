@@ -30,11 +30,11 @@ public class BoardController : MonoBehaviour {
       this.rows.Add(rowList);
 		}
 		
-		Player p1 = new Player(1, false);
+		this.p1 = new Player(1, false);
 		foreach(Piece p in p1.pieces) {
 			createPiece(p);
 		}
-		Player p2 = new Player(2, true);
+		this.p2 = new Player(2, true);
 		foreach(Piece p in p2.pieces) {
 			createPiece(p);
 		}
@@ -61,12 +61,35 @@ public class BoardController : MonoBehaviour {
   
   public void selectPiece(PieceController pc) {
     if(this.selectedPiece != null) {
-      this.selectedPiece.deselect();
-    } else if(this.selectedPiece.model.positionIsInRange(pc.model.position)) {
-      //combine the pieces
-    }
+      if(this.selectedPiece == pc) {
+        this.selectedPiece.deselect();
+      }
+      else if(this.selectedPiece.model.positionIsInRange(this, pc.model.position) && this.selectedPiece.model.canCombineWith(pc.model)) {
+        combine(this.selectedPiece, pc);
+        return;
+      } else {
+        this.selectedPiece.deselect();
+      }
+    } 
     this.selectedPiece = pc;
     pc.select();
+  }
+  
+  public void combine(PieceController owner, PieceController loser) {
+    owner.move(loser.model.position);
+    Player owningPlayer = playerForNumber(owner.model.playerNum);
+    Player losingPlayer = playerForNumber(loser.model.playerNum);
+    Debug.Log(owningPlayer);
+    owningPlayer.pieces.Remove(owner.model);
+    losingPlayer.pieces.Remove(loser.model);
+    Piece newPiece = PieceFactory.combine(owner.model, loser.model);
+    PieceController piece = Instantiate(piecePrefab, Vector3.zero, Quaternion.identity) as PieceController;
+    piece.transform.parent = transform;
+    piece.model = newPiece;
+    piece.board = this;
+    getTile(piece.model.position).myPiece = piece;
+    Destroy(owner.gameObject);
+    Destroy(loser.gameObject);
   }
   
   public void deselectPiece() {
@@ -85,5 +108,11 @@ public class BoardController : MonoBehaviour {
         }
       }
     }
+  }
+  
+  public Player playerForNumber(int num) {
+    if(num == 1) { return p1; }
+    else if(num == 2) { return p2; }
+    else { Debug.Log("playerForNumber shouldn't have gotten here"); return null; }
   }
 }
