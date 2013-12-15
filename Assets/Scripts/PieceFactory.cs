@@ -63,6 +63,10 @@ public class PieceFactory {
       
   }
   
+  public static Piece createBasicPiece(Piece original) {
+	return new BasicPiece (original.color, original.playerNum, original.position.x, original.position.y);
+  }
+
   public static Piece createWholePiece(Piece original) {
     return new WholePiece("black", original.playerNum, original.position.x, original.position.y);
   }
