@@ -11,9 +11,11 @@ public class BoardController : MonoBehaviour {
   public int width;
   public int height;
   public PieceController selectedPiece;
+	public AI ai;
 
 	// Use this for initialization
 	void Start () {
+	this.ai = new AI(new LookaheadStrategy(2));
     this.width = Options.boardWidth;
     this.height = Options.boardHeight;
     this.rows = new List<List<TileController>>();
@@ -65,7 +67,9 @@ public class BoardController : MonoBehaviour {
         this.selectedPiece.deselect();
       }
       else if(this.selectedPiece.model.positionIsInRange(this, pc.model.position) && this.selectedPiece.model.canCombineWith(pc.model)) {
+		int movingPlayer = this.selectedPiece.model.playerNum;
         combine(this.selectedPiece, pc);
+		ai.move(this, movingPlayer == 2);
         return;
       } else {
         this.selectedPiece.deselect();
@@ -88,6 +92,7 @@ public class BoardController : MonoBehaviour {
     piece.model = newPiece;
     piece.board = this;
     getTile(piece.model.position).myPiece = piece;
+	owningPlayer.pieces.Add (newPiece);
     Destroy(owner.gameObject);
     Destroy(loser.gameObject);
   }
@@ -103,7 +108,9 @@ public class BoardController : MonoBehaviour {
     if(this.selectedPiece != null) {
       foreach(Position pos in this.selectedPiece.model.getAvailableSpaces(this)) {
         if(tc.gridPosition.x == pos.x && tc.gridPosition.y == pos.y) {
+		  int movingPlayer = this.selectedPiece.model.playerNum;
           this.selectedPiece.move(pos);
+		  ai.move(this, movingPlayer == 2);
           return;
         }
       }

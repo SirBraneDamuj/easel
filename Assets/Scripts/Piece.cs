@@ -27,4 +27,8 @@ public abstract class Piece {
     }
     return false;
   }
+
+  public bool Equals(Piece p) {
+	return p.color == this.color && p.position.Equals(this.position) && p.playerNum == this.playerNum;
+  }
 }
